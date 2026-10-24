@@ -1,0 +1,12 @@
+﻿namespace Classwork_17_10_2026.DTO.User
+{
+    public class CreateUserDTO
+    {
+        public string Name { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = "User";
+        public int Age { get; set; }
+        public IFormFile? Avatar { get; set; }
+    }
+}
