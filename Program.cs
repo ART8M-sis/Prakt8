@@ -1,6 +1,8 @@
 using Classwork_17_10_2026.Data;
 using Classwork_17_10_2026.Mapping;
 using Classwork_17_10_2026.Services;
+using FileAvatar.Logging;
+using FileAvatar.Middleware;
 using FileAvatar.Validations;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -19,15 +21,19 @@ public class Program
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        builder.Services.AddAutoMapper(cfg =>
+        builder.Services.AddControllers(option =>
         {
-            cfg.AddMaps(typeof(MappingProfile).Assembly);
+            option.Filters.Add<ValidationFilterAttribute>();
         });
 
         // Services
+        builder.Services.AddSingleton<IFileRequestLogger, FileRequestLogger>();
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IFileService, FileService>();
+
+        builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 
         // FluentValidation
         builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>();
@@ -47,6 +53,7 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+        app.UseRequestLogging();
         app.UseAuthorization();
         app.MapControllers();
 
